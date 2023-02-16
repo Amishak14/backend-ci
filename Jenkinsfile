@@ -15,9 +15,9 @@ retriever: modernSCM(
 
 pipeline {
     agent any
-  environment {
-    COMMIT_ID = sh (script: 'git rev-parse HEAD', returnStdout: true).trim().substring(0,3)
-  }
+//   environment {
+//     COMMIT_ID = sh (script: 'git rev-parse HEAD', returnStdout: true).trim().substring(0,3)
+//   }
     stages {
 //         stage("Checkout") {
 //             steps {
@@ -45,46 +45,46 @@ pipeline {
             sourceImageTag : "latest",
             toImagePath: "amisha-jenkins",
             toImageName    : "expense-tracker-backend",
-           // toImageTag     : "${env.BUILD_NUMBER}"
-             toImageTag  : "$COMMIT_ID"
+            toImageTag     : "${env.BUILD_NUMBER}"
+            // toImageTag  : "$COMMIT_ID"
 
     ])
        }
        }
       
       
-      stage("Docker build frontend"){
-            steps {
-              script{
-                openshift.withCluster(){
-                  openshift.withProject("$PROJECT_NAME"){
-                    openshift.selector("bc","amisha-expense-tracker-frontend-buildconfig").startBuild("--wait")
-                  }
-                }
-              }
-            }
-        }
+//       stage("Docker build frontend"){
+//             steps {
+//               script{
+//                 openshift.withCluster(){
+//                   openshift.withProject("$PROJECT_NAME"){
+//                     openshift.selector("bc","amisha-expense-tracker-frontend-buildconfig").startBuild("--wait")
+//                   }
+//                 }
+//               }
+//             }
+//         }
       
-      stage("Tag frontend image") {
-       steps{
-    tagImage([
-            sourceImagePath: "amisha-jenkins",
-            sourceImageName: "expense-tracker-frontend",
-            sourceImageTag : "latest",
-            toImagePath: "amisha-jenkins",
-            toImageName    : "expense-tracker-frontend",
-           // toImageTag     : "${env.BUILD_NUMBER}"
-            toImageTag  : "$COMMIT_ID"
+//       stage("Tag frontend image") {
+//        steps{
+//     tagImage([
+//             sourceImagePath: "amisha-jenkins",
+//             sourceImageName: "expense-tracker-frontend",
+//             sourceImageTag : "latest",
+//             toImagePath: "amisha-jenkins",
+//             toImageName    : "expense-tracker-frontend",
+//            // toImageTag     : "${env.BUILD_NUMBER}"
+//             toImageTag  : "$COMMIT_ID"
       
 
-    ])
-       }
-       }
+//     ])
+//        }
+//        }
       
       stage("Trigger Deployment Update Pipeline"){
         steps{
-         // build job:'tag-pipeline' , parameters: [string(name: 'DOCKERTAG',value: env.BUILD_NUMBER)]
-           build job:'tag-pipeline' , parameters: [string(name: 'DOCKERTAG',value: COMMIT_ID)]
+          build job:'backend-cd-pipeline' , parameters: [string(name: 'DOCKERTAG',value: env.BUILD_NUMBER)]
+           //build job:'tag-pipeline' , parameters: [string(name: 'DOCKERTAG',value: COMMIT_ID)]
         }
       }
       
