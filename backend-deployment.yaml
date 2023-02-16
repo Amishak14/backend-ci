@@ -52,7 +52,7 @@ spec:
   ports:
     - targetPort: 5000
       port: 5000
-  selector:
+  selector:                                                        
     app: expense-tracker
 ---
 #backend-route
