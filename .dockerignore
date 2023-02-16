@@ -6,3 +6,4 @@ d.yaml
 deployment.yaml
 backend-deployment.sh
 backend-deployment.yaml
+manifest.yaml
